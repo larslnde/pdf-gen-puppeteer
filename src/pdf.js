@@ -28,19 +28,6 @@ exports.handler = async event => {
   });
 
 
-
-  var options = {
-    width: '1230px',
-    headerTemplate: "<p></p>",
-    footerTemplate: "<p></p>",
-    displayHeaderFooter: false,
-    margin: {
-        top: "10px",
-        bottom: "30px"
-    },
-    printBackground: true,
-    }
-
   // open a new tab
   const page = await browser.newPage();
 
@@ -63,6 +50,17 @@ exports.handler = async event => {
 //     })
 //     .promise();
 
+    var options = {
+    width: '1230px',
+    headerTemplate: "<p></p>",
+    footerTemplate: "<p></p>",
+    displayHeaderFooter: false,
+    margin: {
+        top: "10px",
+        bottom: "30px"
+    },
+    printBackground: true,
+    }
 
     //generate pdf
     const buffer = await page.pdf(options)
@@ -70,11 +68,11 @@ exports.handler = async event => {
     //upload pdf
     const result = await s3
     .upload({
-      Bucket: process.env.S3_BUCKET,
-      Key: `${Date.now()}.pdf`,
-      Body: buffer,
-      ContentType: "application/pdf",
-      ACL: "public-read"
+        Bucket: process.env.S3_BUCKET,
+        Key: `${Date.now()}.pdf`,
+        Body: buffer,
+        ContentType: "application/pdf",
+        ACL: "public-read"
     })
     .promise();
 
