@@ -11,11 +11,35 @@ const AWS = require('aws-sdk')
 const s3 = new S3Client({ region: process.env.S3_REGION });
 const ses = new AWS.SES({region: 'eu-west-2'});
 
-// default browser viewport size
-const defaultViewport = {
-  width: 1440,
-  height: 1080
-};
+//other requirements
+const fs = require("fs");
+const handlebars = require("handlebars");
+const path = require("path");
+
+const data = {
+	title: "A new Brazilian School",
+	date: "05/12/2018",
+	name: "Rodolfo Luis Marcos",
+	age: 28,
+	birthdate: "12/07/1990",
+	course: "Computer Science",
+	obs: "Graduated in 2014 by Federal University of Lavras, work with Full-Stack development and E-commerce."
+}
+
+//Handlebars items
+//var templateHtml = fs.readFileSync(path.join(process.cwd(), 'template.html'), 'utf8');
+
+//something about line1 below breaks the template and pdf
+var templateHtml = fs.readFileSync(path.resolve(__dirname + '/template.html'), 'utf8');
+var template = handlebars.compile(templateHtml);
+var html = template(data);
+
+//this was just to test, works.
+// const testhtml = '<div class="report-body"><div class="info"> <p>Student: {{name}}</p></div></div>';
+// var template = handlebars.compile(testhtml);
+// var html = template(data);
+
+
 
 // here starts our function!
 exports.handler = async event => {
@@ -23,8 +47,7 @@ exports.handler = async event => {
   // launch a headless browser
   const browser = await chromeLambda.puppeteer.launch({
     args: chromeLambda.args,
-    executablePath: await chromeLambda.executablePath,
-    defaultViewport 
+    executablePath: await chromeLambda.executablePath 
   });
 
 
@@ -32,8 +55,9 @@ exports.handler = async event => {
   const page = await browser.newPage();
 
   // navigate to the page
-  await page.goto('https://jsonplaceholder.typicode.com/todos/1', {
-    waitUntil: ["networkidle0", "load", "domcontentloaded"]
+  await page.goto(`data:text/html;charset=UTF-8,${html}`, {
+    // waitUntil: ["networkidle0", "load", "domcontentloaded"]
+    waitUntil: ["networkidle0"]
   });
 
   // take a screenshot
@@ -81,3 +105,4 @@ exports.handler = async event => {
   // return the uploaded image url
   return { url: result.Location };
 };
+

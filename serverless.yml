@@ -32,6 +32,11 @@ provider:
         - 'ses:sendRawEmail'
       Resource: '*'
 
+package:
+  individually: false
+  include:
+    - src/**
+
 functions:
   capture:
     handler: src/pdf.handler

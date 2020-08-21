@@ -13,5 +13,8 @@
     "aws-sdk": "^2.737.0",
     "chrome-aws-lambda": "^5.2.1",
     "serverless": "^1.79.0"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.6"
   }
 }
